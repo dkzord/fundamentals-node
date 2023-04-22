@@ -48,11 +48,10 @@ const server = http.createServer((req, res) => {
       email: 'johndoe@email.com',
     });
 
-    return res.end('Create user')
+    return res.writeHead(201).end('Create user')
   }
 
-  console.log(method, url);
-  return res.end('Hello World! Gooooooolll');
+  return res.writeHead(404).end('Not found');
 });
 
 server.listen(3333);
