@@ -1,6 +1,8 @@
 // CommonJS module syntax (require); ES6 module syntax (import) is not supported in Node.js
 import http from 'http';
 import { json } from './middlewares/json.js';
+import { Database } from './database.js';
+import { randomUUID } from 'crypto';
 
 /*
   request: all the information about the request made by the user
@@ -29,7 +31,7 @@ import { json } from './middlewares/json.js';
     - Content-Type: application/json
 */
 
-const users = []; // Stateful
+const database = new Database(); // Stateful
 
 const server = http.createServer(async (req, res) => {
   const { method, url } = req;
@@ -37,6 +39,7 @@ const server = http.createServer(async (req, res) => {
   await json(req, res);
 
   if (method === 'GET' && url === '/users') {
+    const users = database.select('users');
 
     // Early return
     return res.end(JSON.stringify(users));
@@ -45,11 +48,13 @@ const server = http.createServer(async (req, res) => {
   if (method === 'POST' && url === '/users') {
     const { name, email } = req.body;
 
-    users.push({
-      id: 1,
+    const users = {
+      id: randomUUID(),
       name,
       email,
-    });
+    };
+
+    database.insert('users', users);
 
     return res.writeHead(201).end('Create user')
   }
