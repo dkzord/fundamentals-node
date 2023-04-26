@@ -1,5 +1,6 @@
 // CommonJS module syntax (require); ES6 module syntax (import) is not supported in Node.js
 import http from 'http';
+import { json } from './middlewares/json.js';
 
 /*
   request: all the information about the request made by the user
@@ -33,24 +34,12 @@ const users = []; // Stateful
 const server = http.createServer(async (req, res) => {
   const { method, url } = req;
 
-  const buffers = [];
-
-  for await (const chunk of req) {
-    buffers.push(chunk);
-  }
-
-  try {
-    req.body = JSON.parse(Buffer.concat(buffers).toString());
-  } catch (error) {
-    req.body = null;
-  }
+  await json(req, res);
 
   if (method === 'GET' && url === '/users') {
 
     // Early return
-    return res
-      .setHeader('Content-Type', 'application/json')
-      .end(JSON.stringify(users));
+    return res.end(JSON.stringify(users));
   }
 
   if (method === 'POST' && url === '/users') {
