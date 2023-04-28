@@ -28,6 +28,17 @@ import { routes } from './routes.js';
 
   Headers
     - Content-Type: application/json
+
+  Three ways to send information for backend.
+    - Query Params: When url stateful => filter, pagination, modify the answer but not mandatory
+        localhost:3333/users?search=DKzord
+
+    - Route Params: Identify a resource
+        localhost:3333/users/1
+
+    - Request Body: Mandatory to create or edit a resource
+        { "name": "DKzord", "email": "aqui@email.com" }
+
 */
 
 const server = http.createServer(async (req, res) => {
@@ -36,7 +47,7 @@ const server = http.createServer(async (req, res) => {
   await json(req, res);
 
   const router = routes.find(route => {
-    return route.method === method && route.url === url;
+    return route.method === method && route.path === url;
   })
 
   if (router) {
