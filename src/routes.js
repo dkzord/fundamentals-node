@@ -1,12 +1,13 @@
 import { Database } from './database.js';
 import { randomUUID } from 'crypto';
+import { buildRoutePath } from './utils/build-route-path.js';
 
 const database = new Database(); // Stateful
 
 export const routes = [
   {
     method: 'GET',
-    url: '/users',
+    path: buildRoutePath('/users'),
     handler: async (req, res) => {
       const users = database.select('users');
 
@@ -16,7 +17,7 @@ export const routes = [
   },
   {
     method: 'POST',
-    url: '/users',
+    path: buildRoutePath('/users'),
     handler: async (req, res) => {
       const { name, email } = req.body;
 
@@ -29,6 +30,17 @@ export const routes = [
       database.insert('users', users);
 
       return res.writeHead(201).end('Create user');
+    },
+  },
+  {
+    method: 'DELETE',
+    path: buildRoutePath('/users/:id'),
+    handler: async (req, res) => {
+      const { id } = req.params;
+
+      database.delete('users', id);
+
+      return res.writeHead(204).end('Delete user');
     },
   }
 ]
